@@ -1,34 +1,12 @@
 # docker-filebot
 
-This is a Docker container for running [FileBot](http://www.filebot.net/), a media file organizer. The container has both a user interface as well as a fully automated mode. The GUI is exposed via RDP and HTTP. For the automated version, you just drop files into the input directory, and they'll be cleaned up and moved to the output directory.
+This is a Docker container for running [FileBot](http://www.filebot.net/), a media file organizer. For the automated version, you just drop files into the input directory, and they'll be cleaned up and moved to the output directory.
 
-This docker image is available [on Docker Hub](https://hub.docker.com/r/coppit/filebot/).
+This docker image is available [on Docker Hub](https://hub.docker.com/r/mayank1791989/filebot/).
 
 ## Usage
 
-### Interactive Method
-
-To use this container for a user interface to FileBot:
-
-`docker run --name=FileBotUI -e WIDTH=1280 -e HEIGHT=720 -p 3389:3389 -p 8080:8080 -v /media/dir/path:/media:rw -v /config/dir/path:/config:rw coppit/filebot`
-
-In this mode, point the UI at the /media folder, which is shared with the host.
-
-There are two ways to use the interactive user interface. One is to connect to the UI in your web browser with the URL http://host:8080/#/client/c/HandBrake. The second is to connect with a remote desktop client using port 3389. There are RDP clients for multiple platforms:
-
-* Microsoft Remote Desktop for Windows (built into the OS)
-* [Microsoft Remote Desktop for OS X](https://itunes.apple.com/us/app/microsoft-remote-desktop/id715768417?mt=12)
-* [rdesktop for Linux](http://www.rdesktop.org/)
-
-The second method is to point your web browser to http://<your docker host>:8080/. This will launch a web browser-based user interface.
-
-Of course, if you change the host ports, then when you connect you'll have to specify the server as `<host ip>:<host port>`. Feel free to drop the 3389 mapping if you don't plan to use RDP, or the 8080 mapping if you don't plan to use the web browser.  
-
-### Non-Interactive Method
-
-If you want to run the container without a UI:
-
-`docker run --name=FileBot -d -v /input/dir/path:/input:rw -v /output/dir/path:/output:rw -v /config/dir/path:/config:rw coppit/filebot`
+`docker run --name=FileBot -d -v /input/dir/path:/input:rw -v /output/dir/path:/output:rw -v /config/dir/path:/config:rw mayank1791989/filebot`
 
 With the default configuration, files written to the input directory will be renamed and copied to the output directory.  It is recommended that you do **not** overlap your input and output directories. FileBot will end up re-processing files that it already processed, and generally make a mess of things.
 
@@ -39,14 +17,6 @@ When the container detects a change to the input directory, it will wait up to 6
 To check the status of the container, run:
 
 `docker logs FileBot`
-
-### Both Methods
-
-You can also combine all of the flags into one big command, to support both the UI as well as the automated conversion.
-
-`docker run --name=FileBot -e WIDTH=1280 -e HEIGHT=720 -p 3389:3389 -p 8080:8080 -v /media/dir/path:/media:rw -v /input/dir/path:/input:rw -v /output/dir/path:/output:rw -v /config/dir/path:/config:rw coppit/filebot`
-
-Just be careful not to use the /input directory with the UI. Otherwise you'll be triggering the automated update.
 
 ## Configuration
 
@@ -62,8 +32,6 @@ By default, FileBot will create files using user ID 0 (typically root) and group
 
 The `ALLOW_REPROCESSING` setting controls whether FileBot can reprocess a file if it is created again in the input directory. You should delete amc-exclude-list.txt in your config directory if you enable this for the first time. Note that filebot will refuse to reprocess an input file if the output file already exists.
 
-The `USE_UI` setting controls whether the user interface features are enabled. Set this to "yes" to enable the UI, which uses approximately 460MB of RAM, as opposed to 20MB of RAM. On my machine it uses .33% CPU instead of .03% CPU.
-
 ### Updates to filebot.sh
 
 Later, when you update the container, it may exit with this message in the log:
@@ -75,7 +43,11 @@ Later, when you update the container, it may exit with this message in the log:
 
 This happens because some bugfix or something went into `filebot.sh`. Rather than deleting your `filebot.sh` (and losing any hard work you put into it), the container will write `filebot.sh.new`. It's your job to merge the two files. You can delete `filebot.sh`.new when you're done. NOTE: You must increase the VERSION even if you make no other changes.  This will let the container know that you performed the merge. It will then start normally.
 
-## Advanced Configuration when Moving Files in FileBot 
+### Install license
+
+Put license file in `/config/license` and run `install_license.sh` from inside docker container. This will create license entry inside `/config/data/.filebot`.
+
+## Advanced Configuration when Moving Files in FileBot
 
 When using the non-interactive method, combined with FileBot's option to move instead of copy files, the moves can be slow if the container is configured with separate /input and /output directories. In this case, you can configure the container to operate on a single mounted volume. First, mount only the /media path:
 

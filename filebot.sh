@@ -43,7 +43,7 @@ VERSION=5
 # Download scripts and such.
 . /files/pre-run.sh
 
-# See http://www.filebot.net/forums/viewtopic.php?t=215 for details on amc
+# # See http://www.filebot.net/forums/viewtopic.php?t=215 for details on amc
 filebot -script fn:amc -no-xattr --output "$OUTPUT_DIR" --log-file /files/amc.log --action copy --conflict auto \
   -non-strict --def ut_dir="$INPUT_DIR" ut_kind=multi music=y deleteAfterExtract=y clean=y \
   excludeList=/config/amc-exclude-list.txt $SUBTITLE_OPTION \

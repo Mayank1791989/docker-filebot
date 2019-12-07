@@ -14,4 +14,3 @@ done
 
 # Avoid a Java encoding error
 export LC_ALL="en_US.UTF-8"
-

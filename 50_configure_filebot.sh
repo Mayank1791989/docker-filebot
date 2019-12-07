@@ -28,6 +28,13 @@ function initialize_configuration {
     cp /files/filebot.sh /config/filebot.sh
     exit 1
   fi
+
+  if [ ! -d /config/data ]
+  then
+    echo "$(ts) Creating /config/data dir"
+    mkdir /config/data
+    chmod a+w /config/data
+  fi
 }
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -77,7 +84,7 @@ EOF
   # Interpolate $USER_ID, $GROUP_ID, and $UMASK
   cat <<EOF >> /files/FileBot.conf
 
-COMMAND="bash /files/filebot.sh"
+COMMAND="bash env HOME=$FILEBOT_DATA /files/filebot.sh"
 
 IGNORE_EVENTS_WHILE_COMMAND_IS_RUNNING=0
 
@@ -89,6 +96,7 @@ EOF
   # Strip \r from the user-provided filebot.sh
   tr -d '\r' < /config/filebot.sh > /files/filebot.sh
   chmod a+wx /files/filebot.sh
+
 }
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -119,11 +127,13 @@ function setup_opensubtitles_account {
 
   if [ "$OPENSUBTITLES_USER" != "" ]; then
     echo "$(ts) Configuring for OpenSubtitles user \"$OPENSUBTITLES_USER\""
-    echo -en "$OPENSUBTITLES_USER\n$OPENSUBTITLES_PASSWORD\n" | /files/runas.sh $USER_ID $GROUP_ID $UMASK filebot -script fn:configure
+    echo -en "$OPENSUBTITLES_USER\n$OPENSUBTITLES_PASSWORD\n" | /files/runas.sh $USER_ID $GROUP_ID $UMASK env HOME=$FILEBOT_DATA filebot -script fn:configure
   else
     echo "$(ts) No OpenSubtitles user set. Skipping setup..."
   fi
 }
+
+#-----------------------------------------------------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -146,6 +156,17 @@ function configure_java_prefs {
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+#-----------------------------------------------------------------------------------------------------------------------
+
+function print_filebot_info {
+  echo "---------------------------------------------------------------------------------------"
+  echo "$(ts) Filebot info \n\n"
+  /files/runas.sh $USER_ID $GROUP_ID $UMASK env HOME=$FILEBOT_DATA filebot -script fn:sysinfo
+  echo "---------------------------------------------------------------------------------------"
+}
+
+#-----------------------------------------------------------------------------------------------------------------------
+
 echo "$(ts) Starting FileBot container"
 
 initialize_configuration
@@ -159,3 +180,5 @@ validate_configuration
 setup_opensubtitles_account
 
 configure_java_prefs
+
+print_filebot_info
