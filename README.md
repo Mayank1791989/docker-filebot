@@ -1,5 +1,7 @@
 # docker-filebot
 
+Forked [coppit/filebot](https://hub.docker.com/r/coppit/filebot) to support new licensed filebot.
+
 This is a Docker container for running [FileBot](http://www.filebot.net/), a media file organizer. For the automated version, you just drop files into the input directory, and they'll be cleaned up and moved to the output directory.
 
 This docker image is available [on Docker Hub](https://hub.docker.com/r/mayank1791989/filebot/).
