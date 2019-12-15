@@ -84,7 +84,7 @@ EOF
   # Interpolate $USER_ID, $GROUP_ID, and $UMASK
   cat <<EOF >> /files/FileBot.conf
 
-COMMAND="bash env HOME=$FILEBOT_DATA /files/filebot.sh"
+COMMAND="env HOME=$FILEBOT_DATA /files/filebot.sh"
 
 IGNORE_EVENTS_WHILE_COMMAND_IS_RUNNING=0
 
