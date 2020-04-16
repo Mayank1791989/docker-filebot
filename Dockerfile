@@ -27,6 +27,7 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 ENV FILEBOT_DATA /config/data
 ENV FILEBOT_OPTS "-Dapplication.deployment=docker -Duser.home=$FILEBOT_DATA"
+ENV FILEBOT_VERSION=4.9.1
 
 # Create dir to keep things tidy. Make sure it's readable by $USER_ID
 RUN mkdir /files && chmod a+rwX /files
@@ -35,7 +36,7 @@ RUN true \
   # To find the latest version: https://www.filebot.net/download.php?mode=s&type=deb&arch=amd64
   # We'll use a specific version for reproducible builds
   && wget --no-check-certificate -q -O /files/filebot.deb \
-    'https://get.filebot.net/filebot/FileBot_4.8.5/FileBot_4.8.5_universal.deb' \
+    https://get.filebot.net/filebot/FileBot_${FILEBOT_VERSION}/FileBot_${FILEBOT_VERSION}_universal.deb \
   && dpkg -i /files/filebot.deb && rm /files/filebot.deb \
   # Revision-lock to a specific version to avoid any surprises.
   && wget --no-check-certificate -q -O /files/runas.sh \
