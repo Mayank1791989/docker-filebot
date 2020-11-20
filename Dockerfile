@@ -27,7 +27,7 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 ENV FILEBOT_DATA /config/data
 ENV FILEBOT_OPTS "-Dapplication.deployment=docker -Duser.home=$FILEBOT_DATA"
-ENV FILEBOT_VERSION=4.9.1
+ENV FILEBOT_VERSION=4.9.2
 
 # Create dir to keep things tidy. Make sure it's readable by $USER_ID
 RUN mkdir /files && chmod a+rwX /files
